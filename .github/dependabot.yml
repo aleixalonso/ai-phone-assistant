@@ -1,0 +1,16 @@
+# Basic `dependabot.yml` file with minimum configuration
+
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "aleixalonso"
+    assignees:
+      - "aleixalonso"
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
