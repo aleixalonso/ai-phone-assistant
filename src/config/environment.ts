@@ -15,6 +15,7 @@ interface Environment {
   TWILIO_API_KEY: string;
   DEEPGRAM_API_KEY: string;
   DEEPSEEK_API_KEY: string;
+  VOICE_MODEL: string;
 }
 
 // Provide default values and type checking for environment variables
@@ -29,6 +30,7 @@ export const env: Environment = {
   TWILIO_API_KEY: process.env.TWILIO_API_KEY || "",
   DEEPGRAM_API_KEY: process.env.DEEPGRAM_API_KEY || "",
   DEEPSEEK_API_KEY: process.env.DEEPSEEK_API_KEY || "",
+  VOICE_MODEL: process.env.VOICE_MODEL || "",
 };
 
 // Validate required environment variables

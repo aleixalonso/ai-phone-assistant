@@ -3,6 +3,7 @@ import { config } from "dotenv";
 import { Buffer } from "node:buffer";
 import { EventEmitter } from "events";
 import fetch from "node-fetch";
+import { env } from "../config";
 
 config();
 
@@ -40,11 +41,11 @@ export class TextToSpeechService extends EventEmitter {
     try {
       // Call Deepgram's text-to-speech API
       const response = await fetch(
-        `https://api.deepgram.com/v1/speak?model=${process.env.VOICE_MODEL}&encoding=mulaw&sample_rate=8000&container=none`,
+        `https://api.deepgram.com/v1/speak?model=${env.VOICE_MODEL}&encoding=mulaw&sample_rate=8000&container=none`,
         {
           method: "POST",
           headers: {
-            Authorization: `Token ${process.env.DEEPGRAM_API_KEY}`,
+            Authorization: `Token ${env.DEEPGRAM_API_KEY}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({

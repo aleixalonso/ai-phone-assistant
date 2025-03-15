@@ -38,7 +38,7 @@ export class GptService extends EventEmitter {
       // Welcome message
       {
         role: "assistant",
-        content: "Soy la asistente de Aleix. • ¿Cómo puedo ayudarte hoy?",
+        content: "I'm Aleix assistant. • How can I help you today?",
       },
     ];
   }
