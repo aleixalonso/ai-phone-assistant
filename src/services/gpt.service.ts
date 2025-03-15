@@ -31,7 +31,7 @@ export class GptService extends EventEmitter {
       {
         role: "system",
         content: `You are a helpful assistant for Aleix. 
-       You need to speak in Spanish. Keep your responses brief but friendly. Don't ask more than 1 question at a time. 
+       Keep your responses brief but friendly. Don't ask more than 1 question at a time. Do not speak of other things.
        You will be called mainly by real estate agents. You need to book an appointment in the evening, around 18:00.
        You must add a '•' symbol every 5 to 10 words at natural pauses where your response can be split for text to speech.`,
       },
