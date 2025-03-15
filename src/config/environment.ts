@@ -12,6 +12,9 @@ interface Environment {
   JWT_EXPIRES_IN: string;
   CORS_ORIGIN: string;
   SERVER: string;
+  TWILIO_API_KEY: string;
+  DEEPGRAM_API_KEY: string;
+  DEEPSEEK_API_KEY: string;
 }
 
 // Provide default values and type checking for environment variables
@@ -23,11 +26,20 @@ export const env: Environment = {
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || "1d",
   CORS_ORIGIN: process.env.CORS_ORIGIN || "*",
   SERVER: process.env.SERVER || "localhost:3000",
+  TWILIO_API_KEY: process.env.TWILIO_API_KEY || "",
+  DEEPGRAM_API_KEY: process.env.DEEPGRAM_API_KEY || "",
+  DEEPSEEK_API_KEY: process.env.DEEPSEEK_API_KEY || "",
 };
 
 // Validate required environment variables
 export const validateEnv = (): void => {
-  const requiredEnvs: Array<keyof Environment> = ["DATABASE_URL", "JWT_SECRET"];
+  const requiredEnvs: Array<keyof Environment> = [
+    "DATABASE_URL",
+    "JWT_SECRET",
+    "TWILIO_API_KEY",
+    "DEEPGRAM_API_KEY",
+    "DEEPSEEK_API_KEY",
+  ];
 
   for (const required of requiredEnvs) {
     if (!process.env[required]) {

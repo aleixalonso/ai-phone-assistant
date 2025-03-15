@@ -1,5 +1,6 @@
 import { EventEmitter } from "events";
 import OpenAI from "openai";
+import { env } from "../config";
 
 interface Message {
   role: "system" | "user" | "assistant";
@@ -20,25 +21,24 @@ export class GptService extends EventEmitter {
 
   constructor() {
     super();
-    this.openai = new OpenAI();
+    this.openai = new OpenAI({
+      apiKey: env.DEEPSEEK_API_KEY,
+      baseURL: "https://api.deepseek.com/v1",
+    });
     this.partialResponseIndex = 0;
     this.userContext = [
       // Initial instructions and info for the AI
       {
         role: "system",
-        content: `You are a helpful assistant for Bart's Automotive. 
-       Keep your responses brief but friendly. Don't ask more than 1 question at a time. 
-       If asked about services not listed below, politely explain we don't offer that service but can refer them to another shop.
-       Key Information:
-       - Hours: Monday to Friday 9 AM to 5 PM
-       - Address: 123 Little Collins Street, Melbourne
-       - Services: Car service, brake repairs, transmission work, towing, and general repairs
+        content: `You are a helpful assistant for Aleix. 
+       You need to speak in Spanish. Keep your responses brief but friendly. Don't ask more than 1 question at a time. 
+       You will be called mainly by real estate agents. You need to book an appointment in the evening, around 18:00.
        You must add a '•' symbol every 5 to 10 words at natural pauses where your response can be split for text to speech.`,
       },
       // Welcome message
       {
         role: "assistant",
-        content: "Welcome to Bart's Automotive. • How can I help you today?",
+        content: "Soy la asistente de Aleix. • ¿Cómo puedo ayudarte hoy?",
       },
     ];
   }
@@ -73,7 +73,8 @@ export class GptService extends EventEmitter {
 
     // Get streaming response from GPT
     const stream = await this.openai.chat.completions.create({
-      model: "chatgpt-4o-latest",
+      // model: "chatgpt-4o-latest",
+      model: "deepseek-chat",
       messages: this.userContext,
       stream: true,
     });
