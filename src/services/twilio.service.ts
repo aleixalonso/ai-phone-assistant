@@ -107,7 +107,8 @@ export class TwilioService {
     ttsService.generate(
       {
         partialResponseIndex: null,
-        partialResponse: "I'm Aleix assistant. • How can I help you today?",
+        partialResponse:
+          "Hello, this is Aleix's assistant. • How can I help you?",
       },
       0
     );
