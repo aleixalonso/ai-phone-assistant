@@ -35,6 +35,11 @@ export const env: Environment = {
 
 // Validate required environment variables
 export const validateEnv = (): void => {
+  // Skip validation in test environment
+  if (process.env.NODE_ENV === "test") {
+    return;
+  }
+
   const requiredEnvs: Array<keyof Environment> = [
     "DATABASE_URL",
     "JWT_SECRET",

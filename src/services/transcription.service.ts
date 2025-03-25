@@ -6,7 +6,6 @@ import {
 } from "@deepgram/sdk";
 import { Buffer } from "node:buffer";
 import { EventEmitter } from "events";
-import "colors";
 
 interface TranscriptionEvent {
   channel?: {
@@ -59,14 +58,12 @@ export class TranscriptionService extends EventEmitter {
           if (!this.speechFinal) {
             console.log(
               `UtteranceEnd received before speechFinal, emit the text collected so far: ${this.finalResult}`
-                .yellow
             );
             this.emit("transcription", this.finalResult);
             return;
           } else {
             console.log(
               "STT -> Speech was already final when UtteranceEnd recevied"
-                .yellow
             );
             return;
           }
@@ -114,7 +111,7 @@ export class TranscriptionService extends EventEmitter {
     );
 
     this.dgConnection.on(LiveTranscriptionEvents.Close, () => {
-      console.log("STT -> Deepgram connection closed".yellow);
+      console.log("STT -> Deepgram connection closed");
     });
   }
 
