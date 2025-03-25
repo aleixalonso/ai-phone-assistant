@@ -6,7 +6,6 @@ import {
 } from "@deepgram/sdk";
 import { Buffer } from "node:buffer";
 import { EventEmitter } from "events";
-import "colors";
 
 interface TranscriptionEvent {
   channel?: {
