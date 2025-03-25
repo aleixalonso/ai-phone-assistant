@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@deepgram/sdk": "^3.11.2",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "openai": "^4.89.0",
     "twilio": "^5.5.1",
