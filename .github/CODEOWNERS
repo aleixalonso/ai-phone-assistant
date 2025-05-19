@@ -1,0 +1,8 @@
+# This file specifies code owners who will be automatically requested for review on PRs
+# Format: file_pattern @user_or_team
+# Learn more: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Dependabot PRs
+package.json @aleixalonso
+package-lock.json @aleixalonso
+yarn.lock @aleixalonso 

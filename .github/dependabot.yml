@@ -6,8 +6,6 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
-    reviewers:
-      - "aleixalonso"
     assignees:
       - "aleixalonso"
     groups:
