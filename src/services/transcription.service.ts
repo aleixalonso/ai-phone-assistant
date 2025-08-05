@@ -117,7 +117,8 @@ export class TranscriptionService extends EventEmitter {
 
   public send(payload: string): void {
     if (this.dgConnection.getReadyState() === 1) {
-      this.dgConnection.send(Buffer.from(payload, "base64"));
+      const buffer = Buffer.from(payload, "base64");
+      this.dgConnection.send(new Uint8Array(buffer).buffer);
     }
   }
 }
