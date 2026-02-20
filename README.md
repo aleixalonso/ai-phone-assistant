@@ -1,6 +1,7 @@
 # AI Phone Assistant
 
 [![Tests](https://github.com/aleixalonso/ai-phone-assistant/actions/workflows/test-code.yml/badge.svg?branch=main)](https://github.com/aleixalonso/ai-phone-assistant/actions/workflows/test-code.yml)
+[![Coverage](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Faleixalonso%2Fai-phone-assistant%2Fmain%2Fbadge-data%2Fcoverage-summary.json&query=%24.total.lines.pct&suffix=%25&label=coverage)](https://github.com/aleixalonso/ai-phone-assistant/actions/workflows/test-code.yml)
 
 Voice-call assistant built with TypeScript + Express. It receives Twilio voice calls, streams caller audio over WebSockets, transcribes speech with Deepgram, generates responses with DeepSeek (OpenAI-compatible API), converts responses back to speech with Deepgram TTS, and streams audio back to the live call.
 
