@@ -6,7 +6,7 @@ This is a simple AI voice assistant that uses OpenAI and Deepgram APIs to transc
 
 ## Prerequisites
 
-- Node.js v22.x
+- Node.js v24.x
 - npm (comes with Node.js)
 
 ## Installation
