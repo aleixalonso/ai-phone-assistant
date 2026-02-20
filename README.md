@@ -110,4 +110,14 @@ Current tests validate:
 
 - root endpoint response (`GET /`)
 - health endpoint response (`GET /health`)
+- Twilio webhook response (`POST /twilio/incoming`)
+- stream buffering order (`StreamService`)
 - 404 behavior on unknown routes
+
+Run coverage locally:
+
+```bash
+npm run test:coverage
+```
+
+Coverage reports are generated in `coverage/` (`coverage/lcov-report/index.html`).

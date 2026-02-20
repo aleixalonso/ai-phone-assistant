@@ -9,6 +9,7 @@
     "dev": "nodemon src/app.ts",
     "build": "tsc",
     "test": "jest",
+    "test:coverage": "jest --coverage",
     "test:watch": "jest --watch"
   },
   "dependencies": {
