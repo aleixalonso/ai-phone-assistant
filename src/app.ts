@@ -2,7 +2,6 @@ import express, { Express, Request, Response } from "express";
 import { env, validateEnv } from "./config";
 import { createServer } from "http";
 import { WebSocketServer } from "ws";
-import path from "path";
 
 import { healthRoutes, twilioRoutes } from "./routes";
 import { TwilioController } from "./controllers";
@@ -20,9 +19,6 @@ const twilioController = new TwilioController();
 // Middleware for parsing JSON bodies
 app.use(express.json());
 
-// Serve static files from the public directory
-app.use(express.static(path.join(__dirname, "../public")));
-
 app.use("/health", healthRoutes);
 app.use("/twilio", twilioRoutes);
 
@@ -33,13 +29,6 @@ wss.on("connection", twilioController.handleWebSocketConnection);
 app.get("/", (req: Request, res: Response) => {
   res.json({ message: "Hello from TypeScript Express Server!" });
 });
-
-// Add route for test interface when in development
-if (process.env.NODE_ENV === "development") {
-  app.get("/test", (req: Request, res: Response) => {
-    res.sendFile(path.join(__dirname, "../public/test-interface.html"));
-  });
-}
 
 server.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);

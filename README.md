@@ -35,8 +35,6 @@ src/
   routes/                   # API route registration
   services/                 # Twilio, STT, LLM, TTS, streaming orchestration
   tests/                    # Integration tests (supertest)
-public/
-  test-interface.html       # Browser test UI (served at /test in development)
 ```
 
 ## Request/Call Flow
@@ -54,7 +52,6 @@ public/
 - `GET /` -> hello JSON payload
 - `GET /health` -> service health check
 - `POST /twilio/incoming` -> TwiML response for Twilio voice calls
-- `GET /test` -> local browser test page (development mode only)
 
 ## Environment Variables
 
