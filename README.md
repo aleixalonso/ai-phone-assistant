@@ -11,7 +11,7 @@ Voice-call assistant built with TypeScript + Express. It receives Twilio voice c
 - Speech-to-text with Deepgram live transcription
 - Streaming LLM responses via DeepSeek chat completions
 - Text-to-speech synthesis with Deepgram
-- Health and sample user API routes
+- Health API route
 - Jest + Supertest tests in CI (GitHub Actions)
 
 ## Tech Stack
@@ -53,7 +53,6 @@ public/
 
 - `GET /` -> hello JSON payload
 - `GET /health` -> service health check
-- `GET /users/:id` -> mock user payload
 - `POST /twilio/incoming` -> TwiML response for Twilio voice calls
 - `GET /test` -> local browser test page (development mode only)
 

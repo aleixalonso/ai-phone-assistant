@@ -4,7 +4,7 @@ import { createServer } from "http";
 import { WebSocketServer } from "ws";
 import path from "path";
 
-import { healthRoutes, userRoutes, twilioRoutes } from "./routes";
+import { healthRoutes, twilioRoutes } from "./routes";
 import { TwilioController } from "./controllers";
 
 // Validate environment variables before starting the app
@@ -24,7 +24,6 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "../public")));
 
 app.use("/health", healthRoutes);
-app.use("/users", userRoutes);
 app.use("/twilio", twilioRoutes);
 
 // WebSocket handling
