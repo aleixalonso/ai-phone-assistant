@@ -1,95 +1,112 @@
-import {
-  createClient,
-  LiveTranscriptionEvents,
-  DeepgramClient,
-  ListenLiveClient,
-} from "@deepgram/sdk";
+import { DeepgramClient, listen } from "@deepgram/sdk";
 import { Buffer } from "node:buffer";
 import { EventEmitter } from "events";
 
-interface TranscriptionEvent {
+type TranscriptionEvent =
+  | listen.ListenV1Results
+  | listen.ListenV1UtteranceEnd;
+
+interface DeepgramConnection {
+  readyState: number;
+  on(event: "open", callback: () => void): void;
+  on(event: "message", callback: (message: TranscriptionEvent) => void): void;
+  on(event: "error", callback: (error: Error) => void): void;
+  on(event: "close", callback: () => void): void;
+  connect(): DeepgramConnection;
+  sendMedia(message: ArrayBufferLike | Blob | ArrayBufferView): void;
+}
+
+interface TranscriptLikeEvent {
   channel?: {
     alternatives?: Array<{
       transcript: string;
     }>;
   };
-  is_final: boolean;
-  speech_final: boolean;
+  is_final?: boolean;
+  speech_final?: boolean;
   type?: string;
 }
 
 export class TranscriptionService extends EventEmitter {
-  private dgConnection: ListenLiveClient;
+  private dgConnection: DeepgramConnection | null;
   private finalResult: string;
   private speechFinal: boolean;
 
   constructor() {
     super();
-    const deepgram: DeepgramClient = createClient(
-      process.env.DEEPGRAM_API_KEY || ""
-    );
-
-    this.dgConnection = deepgram.listen.live({
-      encoding: "mulaw",
-      sample_rate: 8000,
-      model: "nova-2",
-      punctuate: true,
-      interim_results: true,
-      endpointing: 200,
-      utterance_end_ms: 1000,
+    const deepgram = new DeepgramClient({
+      apiKey: process.env.DEEPGRAM_API_KEY || "",
     });
 
+    this.dgConnection = null;
     this.finalResult = "";
     this.speechFinal = false;
 
-    this.dgConnection.on(LiveTranscriptionEvents.Open, () => {
-      this.setupTranscriptionHandlers();
-    });
+    void this.initializeConnection(deepgram);
+  }
+
+  private async initializeConnection(deepgram: DeepgramClient): Promise<void> {
+    try {
+      const connection = await deepgram.listen.v1.connect({
+        model: "nova-2",
+        encoding: "mulaw",
+        sample_rate: 8000,
+        punctuate: "true",
+        interim_results: "true",
+        endpointing: 200,
+        utterance_end_ms: 1000,
+        Authorization: `token ${process.env.DEEPGRAM_API_KEY || ""}`,
+      });
+
+      this.dgConnection = connection.connect();
+      this.dgConnection.on("open", () => {
+        this.setupTranscriptionHandlers();
+      });
+    } catch (error) {
+      console.error("STT -> failed to initialize Deepgram connection");
+      console.error(error);
+    }
   }
 
   private setupTranscriptionHandlers(): void {
-    this.dgConnection.on(
-      LiveTranscriptionEvents.Transcript,
-      (transcriptionEvent: TranscriptionEvent) => {
-        const alternatives = transcriptionEvent.channel?.alternatives;
-        let text = alternatives?.[0]?.transcript || "";
+    this.dgConnection?.on("message", (transcriptionEvent: TranscriptionEvent) => {
+      const event = transcriptionEvent as TranscriptLikeEvent;
+      const alternatives = event.channel?.alternatives;
+      const text = alternatives?.[0]?.transcript || "";
 
-        if (transcriptionEvent.type === "UtteranceEnd") {
-          if (!this.speechFinal) {
-            console.log(
-              `UtteranceEnd received before speechFinal, emit the text collected so far: ${this.finalResult}`
-            );
-            this.emit("transcription", this.finalResult);
-            return;
-          } else {
-            console.log(
-              "STT -> Speech was already final when UtteranceEnd recevied"
-            );
-            return;
-          }
-        }
-
-        if (transcriptionEvent.is_final && text.trim().length > 0) {
-          this.finalResult += ` ${text}`;
-
-          if (transcriptionEvent.speech_final) {
-            this.speechFinal = true;
-            this.emit("transcription", this.finalResult);
-            this.finalResult = "";
-          } else {
-            this.speechFinal = false;
-          }
+      if (event.type === "UtteranceEnd") {
+        if (!this.speechFinal) {
+          console.log(
+            `UtteranceEnd received before speechFinal, emit the text collected so far: ${this.finalResult}`
+          );
+          this.emit("transcription", this.finalResult);
+          return;
         } else {
-          this.emit("utterance", text);
+          console.log("STT -> Speech was already final when UtteranceEnd recevied");
+          return;
         }
       }
-    );
+
+      if (event.is_final && text.trim().length > 0) {
+        this.finalResult += ` ${text}`;
+
+        if (event.speech_final) {
+          this.speechFinal = true;
+          this.emit("transcription", this.finalResult);
+          this.finalResult = "";
+        } else {
+          this.speechFinal = false;
+        }
+      } else {
+        this.emit("utterance", text);
+      }
+    });
 
     this.setupErrorHandlers();
   }
 
   private setupErrorHandlers(): void {
-    this.dgConnection.on(LiveTranscriptionEvents.Error, (error: Error) => {
+    this.dgConnection?.on("error", (error: Error) => {
       console.error("STT -> deepgram error");
       console.error(error);
     });
@@ -102,23 +119,15 @@ export class TranscriptionService extends EventEmitter {
       }
     ); */
 
-    this.dgConnection.on(
-      LiveTranscriptionEvents.Metadata,
-      (metadata: unknown) => {
-        console.error("STT -> deepgram metadata");
-        console.error(metadata);
-      }
-    );
-
-    this.dgConnection.on(LiveTranscriptionEvents.Close, () => {
+    this.dgConnection?.on("close", () => {
       console.log("STT -> Deepgram connection closed");
     });
   }
 
   public send(payload: string): void {
-    if (this.dgConnection.getReadyState() === 1) {
+    if (this.dgConnection?.readyState === 1) {
       const buffer = Buffer.from(payload, "base64");
-      this.dgConnection.send(new Uint8Array(buffer).buffer);
+      this.dgConnection.sendMedia(new Uint8Array(buffer));
     }
   }
 }

@@ -6,7 +6,7 @@ type MockWebSocket = {
 
 describe("StreamService", () => {
   const parseSentEvents = (ws: MockWebSocket): Array<{ event: string }> => {
-    return ws.send.mock.calls.map(([payload]) => JSON.parse(payload));
+    return ws.send.mock.calls.map(([payload]: [string]) => JSON.parse(payload));
   };
 
   it("sends audio immediately when index is null", () => {
