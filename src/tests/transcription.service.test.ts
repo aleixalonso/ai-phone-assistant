@@ -2,40 +2,36 @@ import { EventEmitter } from "events";
 
 jest.mock("@deepgram/sdk", () => {
   const { EventEmitter: NodeEventEmitter } = require("events");
-  const createClient = () => ({
-    listen: {
-      live: () => {
-        const connection = new NodeEventEmitter() as any;
-        connection.getReadyState = jest.fn(() => 1);
-        connection.send = jest.fn();
-        return connection;
+  class DeepgramClient {
+    listen = {
+      v1: {
+        connect: jest.fn(async () => {
+          const connection = new NodeEventEmitter() as any;
+          connection.readyState = 1;
+          connection.connect = jest.fn(() => connection);
+          connection.sendMedia = jest.fn();
+          return connection;
+        }),
       },
-    },
-  });
+    };
+  }
 
   return {
-    LiveTranscriptionEvents: {
-      Open: "open",
-      Transcript: "transcript",
-      Error: "error",
-      Metadata: "metadata",
-      Close: "close",
-    },
-    createClient,
+    DeepgramClient,
   };
 });
 
-import { LiveTranscriptionEvents } from "@deepgram/sdk";
 import { TranscriptionService } from "../services/transcription.service";
 
 describe("TranscriptionService", () => {
-  it("emits utterance for interim transcripts", () => {
+  it("emits utterance for interim transcripts", async () => {
     const service = new TranscriptionService() as any;
     const utteranceHandler = jest.fn();
     service.on("utterance", utteranceHandler);
-    service.dgConnection.emit(LiveTranscriptionEvents.Open);
+    await new Promise(process.nextTick);
+    service.dgConnection.emit("open");
 
-    service.dgConnection.emit(LiveTranscriptionEvents.Transcript, {
+    service.dgConnection.emit("message", {
       channel: { alternatives: [{ transcript: "hello interim" }] },
       is_final: false,
       speech_final: false,
@@ -44,13 +40,14 @@ describe("TranscriptionService", () => {
     expect(utteranceHandler).toHaveBeenCalledWith("hello interim");
   });
 
-  it("emits transcription when speech_final is true", () => {
+  it("emits transcription when speech_final is true", async () => {
     const service = new TranscriptionService() as any;
     const transcriptionHandler = jest.fn();
     service.on("transcription", transcriptionHandler);
-    service.dgConnection.emit(LiveTranscriptionEvents.Open);
+    await new Promise(process.nextTick);
+    service.dgConnection.emit("open");
 
-    service.dgConnection.emit(LiveTranscriptionEvents.Transcript, {
+    service.dgConnection.emit("message", {
       channel: { alternatives: [{ transcript: "final text" }] },
       is_final: true,
       speech_final: true,
@@ -59,19 +56,20 @@ describe("TranscriptionService", () => {
     expect(transcriptionHandler).toHaveBeenCalledWith(" final text");
   });
 
-  it("emits collected transcription on UtteranceEnd before speech_final", () => {
+  it("emits collected transcription on UtteranceEnd before speech_final", async () => {
     const service = new TranscriptionService() as any;
     const transcriptionHandler = jest.fn();
     service.on("transcription", transcriptionHandler);
-    service.dgConnection.emit(LiveTranscriptionEvents.Open);
+    await new Promise(process.nextTick);
+    service.dgConnection.emit("open");
 
-    service.dgConnection.emit(LiveTranscriptionEvents.Transcript, {
+    service.dgConnection.emit("message", {
       channel: { alternatives: [{ transcript: "partial result" }] },
       is_final: true,
       speech_final: false,
     });
 
-    service.dgConnection.emit(LiveTranscriptionEvents.Transcript, {
+    service.dgConnection.emit("message", {
       type: "UtteranceEnd",
       is_final: false,
       speech_final: false,
@@ -80,15 +78,16 @@ describe("TranscriptionService", () => {
     expect(transcriptionHandler).toHaveBeenCalledWith(" partial result");
   });
 
-  it("sends decoded audio only when deepgram connection is open", () => {
+  it("sends decoded audio only when deepgram connection is open", async () => {
     const service = new TranscriptionService() as any;
     const payload = Buffer.from("audio-bytes").toString("base64");
+    await new Promise(process.nextTick);
 
     service.send(payload);
-    expect(service.dgConnection.send).toHaveBeenCalledTimes(1);
+    expect(service.dgConnection.sendMedia).toHaveBeenCalledTimes(1);
 
-    service.dgConnection.getReadyState.mockReturnValue(0);
+    service.dgConnection.readyState = 0;
     service.send(payload);
-    expect(service.dgConnection.send).toHaveBeenCalledTimes(1);
+    expect(service.dgConnection.sendMedia).toHaveBeenCalledTimes(1);
   });
 });

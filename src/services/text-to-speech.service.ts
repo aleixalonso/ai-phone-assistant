@@ -2,7 +2,6 @@
 import { config } from "dotenv";
 import { Buffer } from "node:buffer";
 import { EventEmitter } from "events";
-import fetch from "node-fetch";
 import { env } from "../config";
 
 config();

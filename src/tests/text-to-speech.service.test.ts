@@ -1,12 +1,10 @@
-import fetch from "node-fetch";
 import { TextToSpeechService } from "../services/text-to-speech.service";
 
-jest.mock("node-fetch", () => jest.fn());
-
 describe("TextToSpeechService", () => {
-  const mockedFetch = fetch as unknown as jest.Mock;
+  const mockedFetch = jest.fn();
 
   beforeEach(() => {
+    global.fetch = mockedFetch as unknown as typeof fetch;
     mockedFetch.mockReset();
   });
 
