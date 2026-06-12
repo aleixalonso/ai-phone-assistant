@@ -13,24 +13,24 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@deepgram/sdk": "^5.1.0",
+    "@deepgram/sdk": "^5.4.0",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "openai": "^6.35.0",
-    "twilio": "^6.0.0",
-    "ws": "^8.20.0"
+    "openai": "^6.41.0",
+    "twilio": "^6.0.2",
+    "ws": "^8.21.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
-    "@types/node": "^25.6.0",
+    "@types/node": "^25.9.1",
     "@types/node-fetch": "^2.6.13",
     "@types/supertest": "^7.2.0",
     "@types/ws": "^8.18.1",
-    "jest": "^30.3.0",
+    "jest": "^30.4.2",
     "nodemon": "^3.1.14",
     "supertest": "^7.2.2",
-    "ts-jest": "^29.4.9",
+    "ts-jest": "^29.4.11",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3"
   }
