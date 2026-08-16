@@ -8,6 +8,9 @@ updates:
       interval: "monthly"
     assignees:
       - "aleixalonso"
+    ignore:
+      # ts-jest peer range is >=4.3 <7, so typescript 7.x breaks npm ci
+      - dependency-name: "typescript"
     groups:
       all-dependencies:
         patterns:
